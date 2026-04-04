@@ -102,12 +102,6 @@ npm run dev
 
 ---
 
-## 📸 Screenshots
-
-> Add your screenshots here (Dashboard, Charts, Modal, Dark Mode)
-
----
-
 ## 🧠 Key Learnings
 
 * Role-based UI implementation
