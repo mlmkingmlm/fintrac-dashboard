@@ -203,8 +203,16 @@ if (filteredTransactions.length < 3) {
               <XAxis dataKey="category" stroke="#6b7280" />
               <YAxis stroke="#6b7280" />
 
-              <Tooltip />
-
+<Tooltip
+  formatter={(value) => [`₹${value}`, "Amount"]}
+  labelFormatter={(label) => `Category: ${label}`}
+  contentStyle={{
+    backgroundColor: "#1e293b",
+    border: "none",
+    borderRadius: "8px",
+    color: "white",
+  }}
+/>
               <Legend />
 
               <Bar
