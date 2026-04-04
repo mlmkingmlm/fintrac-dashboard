@@ -1,12 +1,11 @@
 /*
 Name - Naveen Kumar
-Purpose - This Component for Showing Category Chart and Balance Chart on UI
-Date - 03-04-2026
+Purpose - Modern Charts (Advanced UI)
 */
 
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   Tooltip,
@@ -14,12 +13,14 @@ import {
   Pie,
   Cell,
   ResponsiveContainer,
+  CartesianGrid,
+  Legend,
 } from "recharts";
 
-const COLORS = ["#3b82f6", "#22c55e", "#ef4444", "#facc15"];
+const COLORS = ["#6366f1", "#22c55e", "#f97316", "#ef4444"];
 
 export default function Charts({ transactions }) {
-  // Line Chart Data
+  // 📊 Monthly Income vs Expense
   const monthlyData = {};
 
   transactions.forEach((t) => {
@@ -27,15 +28,24 @@ export default function Charts({ transactions }) {
       month: "short",
     });
 
-    monthlyData[month] = (monthlyData[month] || 0) + t.amount;
+    if (!monthlyData[month]) {
+      monthlyData[month] = { income: 0, expense: 0 };
+    }
+
+    if (t.type === "income") {
+      monthlyData[month].income += t.amount;
+    } else {
+      monthlyData[month].expense += t.amount;
+    }
   });
 
   const lineData = Object.keys(monthlyData).map((month) => ({
     name: month,
-    value: monthlyData[month],
+    income: monthlyData[month].income,
+    expense: monthlyData[month].expense,
   }));
 
-  // Pie Chart Data
+  // 🍩 Pie / Donut Data (Expense Category)
   const categoryMap = {};
 
   transactions.forEach((t) => {
@@ -53,58 +63,80 @@ export default function Charts({ transactions }) {
   return (
     <div className="grid md:grid-cols-2 gap-4">
 
-      {/* Line Chart */}
+      {/* 📈 Area Chart */}
       <div className="bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-slate-700">
-        <h2 className="mb-3 text-black dark:text-white">
-          Balance Trend
+        <h2 className="mb-3 text-black dark:text-white font-semibold">
+          Income vs Expense Trend
         </h2>
 
-        <ResponsiveContainer width="100%" height={250}>
-          <LineChart data={lineData}>
-            
-            {/* Axis */}
+        <ResponsiveContainer width="100%" height={260}>
+          <AreaChart data={lineData}>
+
+            {/* Gradient */}
+            <defs>
+              <linearGradient id="incomeColor" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8}/>
+                <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+              </linearGradient>
+
+              <linearGradient id="expenseColor" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#ef4444" stopOpacity={0.8}/>
+                <stop offset="95%" stopColor="#ef4444" stopOpacity={0}/>
+              </linearGradient>
+            </defs>
+
+            <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+
             <XAxis dataKey="name" stroke="#6b7280" />
             <YAxis stroke="#6b7280" />
 
-            {/* Tooltip */}
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1e293b",
-                border: "none",
-                color: "white",
-              }}
+            <Tooltip />
+
+            <Legend />
+
+            <Area
+              type="monotone"
+              dataKey="income"
+              stroke="#22c55e"
+              fillOpacity={1}
+              fill="url(#incomeColor)"
             />
 
-            {/* Line */}
-            <Line
+            <Area
               type="monotone"
-              dataKey="value"
-              stroke="#3b82f6"
-              strokeWidth={2}
+              dataKey="expense"
+              stroke="#ef4444"
+              fillOpacity={1}
+              fill="url(#expenseColor)"
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
       </div>
 
-      {/*  Pie Chart */}
+      {/* 🍩 Donut Chart */}
       <div className="bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-200 dark:border-slate-700">
-        <h2 className="mb-3 text-black dark:text-white">
-          Category Breakdown
+        <h2 className="mb-3 text-black dark:text-white font-semibold">
+          Expense Breakdown
         </h2>
 
         {pieData.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-gray-500 dark:text-gray-400 text-center mt-10">
             No expense data
           </p>
         ) : (
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={260}>
             <PieChart>
+
               <Pie
                 data={pieData}
                 dataKey="value"
                 nameKey="name"
-                outerRadius={80}
-                label
+                innerRadius={60}
+                outerRadius={90}
+                paddingAngle={3}
+                label={({ name, percent }) =>
+                  `${name} ${(percent * 100).toFixed(0)}%`
+                }
               >
                 {pieData.map((_, index) => (
                   <Cell
@@ -114,13 +146,9 @@ export default function Charts({ transactions }) {
                 ))}
               </Pie>
 
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "#1e293b",
-                  border: "none",
-                  color: "white",
-                }}
-              />
+              <Tooltip />
+
+              <Legend />
             </PieChart>
           </ResponsiveContainer>
         )}
