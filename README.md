@@ -122,7 +122,6 @@ npm run dev
 
 * Backend integration (Node.js + MongoDB)
 * Authentication system (Login / Signup)
-* Export reports (PDF / CSV)
 * Real-time data updates
 
 ---
