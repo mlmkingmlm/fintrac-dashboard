@@ -86,6 +86,17 @@ export default function TransactionsTable({
     setShowModal(false);
   };
 
+  const handleEdit = (t) => {
+  setForm(t);
+  setEditId(t.id);
+  setShowModal(true);
+};
+
+const confirmDelete = () => {
+  setTransactions(transactions.filter((t) => t.id !== deleteId));
+  setShowDeleteModal(false);
+};
+
   // PDF
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
@@ -366,6 +377,37 @@ export default function TransactionsTable({
         </button>
 
       </div>
+    </div>
+  </div>
+)}
+{showDeleteModal && (
+  <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+
+    <div
+      className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+      onClick={() => setShowDeleteModal(false)}
+    ></div>
+
+    <div className="relative bg-white dark:bg-slate-800 p-6 rounded-xl w-[300px] text-center space-y-4">
+
+      <p className="text-lg font-semibold">Are you sure?</p>
+
+      <div className="flex justify-center gap-3">
+        <button
+          onClick={() => setShowDeleteModal(false)}
+          className="px-3 py-1 rounded bg-gray-400 text-white"
+        >
+          Cancel
+        </button>
+
+        <button
+          onClick={confirmDelete}
+          className="px-3 py-1 rounded bg-red-500 text-white"
+        >
+          Delete
+        </button>
+      </div>
+
     </div>
   </div>
 )}
